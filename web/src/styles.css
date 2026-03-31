@@ -150,10 +150,13 @@ p {
 }
 
 /* 新建任务表单 */
-.add-task {
+.add-task-form {
+  margin-bottom: 20px;
+}
+
+.add-task-row {
   display: flex;
   gap: 10px;
-  margin-bottom: 20px;
 }
 
 .task-input {
@@ -195,6 +198,31 @@ p {
   outline: none;
 }
 
+/* 截止日期切换按钮 */
+.due-toggle {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 44px;
+  padding: 0;
+  font-size: 18px;
+  background: var(--input-bg);
+  border: 1px solid var(--input-border);
+  border-radius: 12px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.due-toggle:hover {
+  border-color: var(--accent);
+  background: rgba(67, 97, 238, 0.08);
+}
+
+.due-toggle.active {
+  border-color: var(--accent);
+  background: rgba(67, 97, 238, 0.12);
+}
+
 .add-btn {
   padding: 12px 24px;
   font-family: var(--font-body);
@@ -220,6 +248,61 @@ p {
 .add-btn:disabled {
   opacity: 0.5;
   cursor: not-allowed;
+}
+
+/* 截止日期输入行 */
+.add-task-due {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-top: 12px;
+  padding: 12px 16px;
+  background: var(--input-bg);
+  border: 1px solid var(--input-border);
+  border-radius: 12px;
+  animation: fadeIn 0.2s ease-out;
+}
+
+.due-label {
+  font-size: 13px;
+  font-weight: 500;
+  color: var(--text-secondary);
+  white-space: nowrap;
+}
+
+.due-input {
+  flex: 1;
+  padding: 8px 12px;
+  font-family: var(--font-body);
+  font-size: 14px;
+  color: var(--text-primary);
+  background: transparent;
+  border: 1px solid var(--input-border);
+  border-radius: 8px;
+  outline: none;
+  transition: all 0.2s ease;
+}
+
+.due-input:focus {
+  border-color: var(--input-focus);
+}
+
+.clear-due-btn {
+  padding: 6px 12px;
+  font-family: var(--font-body);
+  font-size: 13px;
+  color: var(--text-secondary);
+  background: transparent;
+  border: 1px solid var(--input-border);
+  border-radius: 6px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.clear-due-btn:hover {
+  color: var(--priority-high);
+  border-color: var(--priority-high);
+  background: var(--priority-high-bg);
 }
 
 /* 任务列表 */

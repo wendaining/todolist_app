@@ -46,10 +46,10 @@ function App() {
     loadTasks();
   }, []);
 
-  const handleAdd = async (title: string, priority: TaskPriority) => {
+  const handleAdd = async (title: string, priority: TaskPriority, dueAt: string | null) => {
     setAdding(true);
     try {
-      const newTask = await api.createTask({ title, priority });
+      const newTask = await api.createTask({ title, priority, dueAt });
       setTasks((prev) => [newTask, ...prev]);
     } catch (e) {
       setError('添加任务失败');
