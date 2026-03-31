@@ -13,6 +13,8 @@
 2. 2026-03-31：已安装并配置 Java 工具链（JDK 21 + Maven 3.9.14），并补充分层设计说明文档。
 3. 2026-03-31：已新增 Build/Test Skill，可通过“构建项目并测试”等触发词复用构建测试流程。
 4. 2026-03-31：已将 README 中个人思考迁移至独立背景文档，并完成 README 简化改写。
+5. 2026-03-31：已完成后端 Task 数据结构定义（Task + TaskStatus + TaskPriority）。
+6. 2026-03-31：执行 `cd api && mvn test` 构建成功（当前暂无测试用例）。
 
 ## 0. 启动前检查
 
@@ -37,7 +39,7 @@
 
 ### 1.1 数据与接口
 
-- [ ] 定义 Task 数据结构（与 SPEC 一致）
+- [x] 定义 Task 数据结构（与 SPEC 一致）
 - [ ] 完成最小 API：POST /tasks、PATCH /tasks/{id}、GET /tasks
 - [ ] 增加最小参数校验：title 非空，priority 枚举
 
