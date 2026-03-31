@@ -1,0 +1,11 @@
+# Maven
+api/target/
+
+# Node
+web/node_modules/
+web/dist/
+
+# IDE and OS
+.vscode/
+.idea/
+.DS_Store

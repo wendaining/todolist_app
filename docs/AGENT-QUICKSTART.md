@@ -36,3 +36,7 @@
 1. 主线技术栈：Java 21 + Spring Boot 3 + React + TypeScript + SQLite
 2. 当前目标：M1 本地单端可用（无同步）
 3. 核心规则：同步/鉴权/数据模型变更需先更新 SPEC
+
+## 5. 常用触发语（可复制）
+
+1. "请使用 java-build-test skill，对当前项目执行构建并测试，并给出失败摘要。"

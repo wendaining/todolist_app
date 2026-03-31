@@ -92,6 +92,11 @@ Task 字段：
 2. 增加一条文件级 instructions 并验证其生效。
 3. 每个里程碑输出“规格对应项 + 验收证据”。
 
+## 9.1 可直接复用的 Skill
+
+1. Build/Test Skill: .github/skills/java-build-test/SKILL.md
+2. 推荐触发词："构建项目并测试"、"build and test"、"运行构建验证"
+
 ## 10. 交接模板（给下一个 Agent）
 
 可复制以下结构：
