@@ -1,8 +1,8 @@
-# 前端设计文档 v2.0
+# 前端设计文档 v3.0
 
 ## 1. 概述
 
-基于 React + TypeScript + Vite 的 TodoList Web 前端，采用**极简文艺风**设计，支持浅色/深色主题切换。
+基于 React + TypeScript + Vite 的 TodoList Web 前端，采用 **Editorial / 报刊杂志风格** 设计，支持浅色/深色主题切换。
 
 ## 2. 技术栈
 
@@ -12,47 +12,59 @@
 | 语言 | TypeScript | 类型安全 |
 | 构建 | Vite | 快速开发/构建 |
 | 测试 | Vitest + Testing Library | 单元测试 + 组件测试 |
-| 样式 | CSS Variables | 支持主题切换 |
+| 样式 | CSS Variables | 支持主题切换，无 Tailwind |
 | 状态管理 | useState/useEffect | MVP 阶段不引入 Redux/Zustand |
 
-## 3. 设计风格：极简文艺（Refined Editorial）
+## 3. 设计风格：Editorial（报刊杂志）
 
-### 3.1 调性
-- 克制优雅、留白呼吸、精致细节
-- 使用衬线字体作为标题增加文艺感
-- 任务卡片用侧边色条标示优先级（而非背景色）
+### 3.1 设计理念
+- **克制、利落、高对比**：黑白为主，彩色仅用于功能色（优先级）
+- **直角锐利**：所有元素无圆角（border-radius: 0）
+- **衬线字体**：Fraunces（标题）+ Newsreader（正文），呈现印刷品质感
+- **实线边框**：用 1px 实线边框替代柔和阴影
+- **优先级侧边条**：3px 纯色竖条标示优先级，不使用渐变或背景色
 
 ### 3.2 字体
 ```css
---font-heading: 'Playfair Display', 'Noto Serif SC', serif;  /* 标题 */
---font-body: 'Source Sans 3', 'Noto Sans SC', sans-serif;    /* 正文 */
+--font-display: 'Fraunces', Georgia, serif;      /* 标题/按钮 */
+--font-body: 'Newsreader', 'Times New Roman', serif;  /* 正文 */
 ```
+字体来源：Google Fonts
 
 ### 3.3 色彩系统
 
 **浅色主题（默认）**
 | 变量 | 值 | 用途 |
 |------|------|------|
-| --bg-gradient | #f8f9fa → #e9ecef | 页面背景 |
-| --card-bg | rgba(255,255,255,0.88) | 卡片背景 |
-| --text-primary | #1a1a2e | 主要文字 |
-| --accent | #4361ee | 强调色 |
-| --priority-high | #ef476f | 高优先级 |
-| --priority-medium | #f59f00 | 中优先级 |
-| --priority-low | #06d6a0 | 低优先级 |
+| --bg | #faf9f7 | 页面背景（暖白） |
+| --bg-paper | #ffffff | 卡片/面板背景 |
+| --bg-muted | #f5f4f2 | 次要背景 |
+| --ink | #1a1a1a | 主要文字（纯黑） |
+| --ink-secondary | #666666 | 次要文字 |
+| --ink-muted | #999999 | 提示文字 |
+| --border | #e0e0e0 | 默认边框 |
+| --border-strong | #1a1a1a | 强调边框 |
+| --urgent | #d62828 | 高优先级 |
+| --warning | #f77f00 | 中优先级 |
+| --calm | #2d6a4f | 低优先级 |
 
 **深色主题**
 | 变量 | 值 | 用途 |
 |------|------|------|
-| --bg-gradient | #0f0f1a → #1a1a2e | 页面背景 |
-| --card-bg | rgba(30,30,50,0.9) | 卡片背景 |
-| --text-primary | #f8f9fa | 主要文字 |
-| --accent | #748ffc | 强调色 |
+| --bg | #121212 | 页面背景 |
+| --bg-paper | #1e1e1e | 卡片/面板背景 |
+| --bg-muted | #2a2a2a | 次要背景 |
+| --ink | #e8e6e3 | 主要文字（暖白） |
+| --ink-secondary | #a0a0a0 | 次要文字 |
+| --ink-muted | #666666 | 提示文字 |
+| --border | #333333 | 默认边框 |
+| --border-strong | #e8e6e3 | 强调边框 |
 
-### 3.4 动效
-- **页面加载**：fadeInUp 交错渐入
-- **任务项**：hover 时右移 + 侧边条加宽
-- **过渡**：所有颜色 0.3s ease 平滑切换
+### 3.4 交互与动效
+- **过渡**：所有交互 0.15s ease，快速干脆
+- **hover**：边框加深、颜色反转（而非阴影）
+- **任务项**：hover 时背景变为 muted，侧边条保持位置
+- **主题切换按钮**：文字 "Dark" / "Light"，无 emoji
 
 ## 4. 目录结构
 

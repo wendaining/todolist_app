@@ -103,7 +103,7 @@ function App() {
             onClick={toggleTheme}
             aria-label={theme === 'light' ? '切换到深色模式' : '切换到浅色模式'}
           >
-            {theme === 'light' ? '🌙' : '☀️'}
+            {theme === 'light' ? 'Dark' : 'Light'}
           </button>
         </header>
         <AddTask onAdd={handleAdd} loading={adding} />
