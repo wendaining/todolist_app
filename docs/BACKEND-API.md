@@ -7,6 +7,7 @@
 1. 当前已完成任务读取、创建、更新主链路：Repository -> Service -> Controller（GET /tasks、POST /tasks、PATCH /tasks/{id}）。
 2. 当前已完成同步最小主链路（POST /sync/pull、POST /sync/push），支持 X-Token 空间隔离与 LWW 合并。
 3. 当前已完成安全加固最小主链路：Token 哈希存储、过期/吊销、每 Token 每分钟限流、Token 轮换/吊销接口。
+4. 当前安全状态已持久化到 SQLite：Token 元数据与限流窗口重启后可保留。
 
 ## 2. 包结构
 
@@ -22,6 +23,7 @@
 10. com.todolist.api.security.service: Token 鉴权与限流服务
 11. com.todolist.api.security.controller: Token 轮换/吊销接口
 12. com.todolist.api.security.dto: 鉴权响应 DTO
+13. com.todolist.api.security.store: 安全状态持久化存储层
 
 ## 3. 类与枚举说明
 
@@ -155,12 +157,27 @@
 2. 支持 Token 过期时间与吊销状态
 3. 限流策略：每 Token 每分钟固定窗口计数
 4. 超限返回 429
+5. 通过 TokenStateStore 抽象读写安全状态，默认落地到 SQLite
 
 ### 3.15 AuthController / TokenRotateResponse
 
 - 文件: api/src/main/java/com/todolist/api/security/controller/AuthController.java
 - 文件: api/src/main/java/com/todolist/api/security/dto/TokenRotateResponse.java
 - 作用: 提供 Token 轮换与吊销接口。
+
+### 3.16 TokenStateStore / JdbcTokenStateStore
+
+- 文件: api/src/main/java/com/todolist/api/security/store/TokenStateStore.java
+- 文件: api/src/main/java/com/todolist/api/security/store/JdbcTokenStateStore.java
+- 文件: api/src/main/java/com/todolist/api/security/store/TokenMetadata.java
+- 文件: api/src/main/java/com/todolist/api/security/store/InMemoryTokenStateStore.java
+- 作用: 持久化 Token 元数据与限流窗口计数；测试场景使用内存实现。
+
+关键点：
+
+1. 表 security_tokens: token_hash、created_at、expires_at、revoked_at
+2. 表 security_rate_windows: token_hash、window_minute、request_count
+3. 启动时通过 schema.sql 自动建表（若不存在）
 
 ## 4. 计划中的最小接口（来自 SPEC）
 

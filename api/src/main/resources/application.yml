@@ -4,6 +4,12 @@ server:
 spring:
   application:
     name: todolist-api
+  datasource:
+    url: jdbc:sqlite:./data/todolist.db
+    driver-class-name: org.sqlite.JDBC
+  sql:
+    init:
+      mode: always
 
 app:
   security:
