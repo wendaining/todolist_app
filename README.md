@@ -46,4 +46,5 @@
 - [项目规格 v0.1](docs/SPEC-v0.1.md)
 - [分步开发清单（含 Agent 学习）](docs/DEV-CHECKLIST.md)
 - [Agent 交接入口（跨智能体）](AGENTS.md)
+- [Agent 极速启动模板](docs/AGENT-QUICKSTART.md)
 - [Copilot 工作约定](.github/copilot-instructions.md)

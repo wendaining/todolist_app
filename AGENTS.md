@@ -8,6 +8,7 @@
 
 ## 2. 先读顺序（必须）
 
+0. docs/AGENT-QUICKSTART.md（切换 Agent 时优先）
 1. docs/START_HERE.md
 2. docs/SPEC-v0.1.md
 3. docs/DEV-CHECKLIST.md
@@ -43,6 +44,13 @@
 2. 若要修改核心规则（同步、鉴权、数据模型），先更新 docs/SPEC-v0.1.md 再改代码。
 3. 每次代码变更后，优先更新 docs/DEV-CHECKLIST.md 的验收项或里程碑进度。
 4. 建议每次只改一个小点，并给出可验证结果。
+
+## 5.1 文档联动协议（强制）
+
+1. 任意代码改动必须同步更新 docs/DEV-CHECKLIST.md（状态、验收项或证据）。
+2. 若改动影响 API、数据模型、同步策略、鉴权规则，必须先更新 docs/SPEC-v0.1.md，再做代码变更。
+3. 任意“make progress”行为（即使不改代码）也要在 docs/DEV-CHECKLIST.md 反映进度变化。
+4. Agent 的交付说明必须同时包含：代码改动清单 + 文档改动清单。
 
 ## 6. 数据模型与最小 API（来源：SPEC-v0.1）
 

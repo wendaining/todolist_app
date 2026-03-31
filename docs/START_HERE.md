@@ -22,6 +22,7 @@
 
 ## 如果切换 Agent（例如 Copilot -> Codex）
 
+0. 先复制 [AGENT-QUICKSTART.md](./AGENT-QUICKSTART.md) 的启动模板
 1. 先让新 Agent 阅读仓库根目录的 [AGENTS.md](../AGENTS.md)
 2. 再按 AGENTS.md 里的顺序读取 START_HERE、SPEC、DEV-CHECKLIST
 3. 让新 Agent 先复述一次“当前里程碑 + 下一步最小动作”再开始改代码
