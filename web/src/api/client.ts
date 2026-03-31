@@ -30,6 +30,15 @@ export interface UpdateTaskRequest {
   dueAt?: string | null;
 }
 
+export interface SyncResponse {
+  tasks: Task[];
+  serverTime: string;
+}
+
+export interface SyncPushRequest {
+  tasks: Task[];
+}
+
 async function request<T>(path: string, options: RequestInit = {}): Promise<T> {
   const response = await fetch(`${API_BASE}${path}`, {
     ...options,
@@ -60,5 +69,18 @@ export const api = {
     request<Task>(`/tasks/${id}`, {
       method: 'PATCH',
       body: JSON.stringify(data),
+    }),
+
+  // 同步接口
+  syncPull: () =>
+    request<SyncResponse>('/sync/pull', {
+      method: 'POST',
+      body: JSON.stringify({}),
+    }),
+
+  syncPush: (tasks: Task[]) =>
+    request<SyncResponse>('/sync/push', {
+      method: 'POST',
+      body: JSON.stringify({ tasks }),
     }),
 };

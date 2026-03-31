@@ -1,9 +1,10 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useCallback } from 'react';
 import { api, Task, TaskPriority } from './api/client';
 import { AddTask } from './components/AddTask';
 import { TaskList } from './components/TaskList';
 import { TaskEditor } from './components/TaskEditor';
 import { useReminder } from './hooks/useReminder';
+import { useSync } from './hooks/useSync';
 
 type Theme = 'light' | 'dark';
 
@@ -14,11 +15,15 @@ function App() {
   const [error, setError] = useState<string | null>(null);
   const [editingTask, setEditingTask] = useState<Task | null>(null);
   const [saving, setSaving] = useState(false);
+  const [syncing, setSyncing] = useState(false);
   const [theme, setTheme] = useState<Theme>(() => {
     const saved = localStorage.getItem('theme') as Theme | null;
     if (saved) return saved;
     return window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
   });
+
+  // 云同步 hook
+  const { pull, push } = useSync(setTasks, setError);
 
   // 主题切换
   useEffect(() => {
@@ -33,28 +38,46 @@ function App() {
   // 本地提醒：扫描即将到期任务并触发浏览器通知
   useReminder(tasks);
 
-  const loadTasks = async () => {
+  // 初始加载：从服务器拉取任务
+  const loadTasks = useCallback(async () => {
     try {
       setError(null);
-      const data = await api.listTasks();
-      setTasks(data);
+      await pull();
     } catch (e) {
-      setError('加载任务失败，请确保后端服务已启动');
-      console.error(e);
+      // 如果 pull 失败，尝试用普通 listTasks
+      try {
+        const data = await api.listTasks();
+        setTasks(data);
+      } catch {
+        setError('加载任务失败，请确保后端服务已启动');
+      }
     } finally {
       setLoading(false);
     }
-  };
+  }, [pull]);
 
   useEffect(() => {
     loadTasks();
-  }, []);
+  }, [loadTasks]);
+
+  // 手动同步按钮
+  const handleSync = async () => {
+    setSyncing(true);
+    try {
+      await push(tasks);
+    } finally {
+      setSyncing(false);
+    }
+  };
 
   const handleAdd = async (title: string, priority: TaskPriority, dueAt: string | null) => {
     setAdding(true);
     try {
       const newTask = await api.createTask({ title, priority, dueAt });
-      setTasks((prev) => [newTask, ...prev]);
+      const newTasks = [newTask, ...tasks];
+      setTasks(newTasks);
+      // 新增后自动推送同步
+      push(newTasks);
     } catch (e) {
       setError('添加任务失败');
       console.error(e);
@@ -68,7 +91,10 @@ function App() {
       const updated = await api.updateTask(id, {
         status: done ? 'done' : 'todo',
       });
-      setTasks((prev) => prev.map((t) => (t.id === id ? updated : t)));
+      const newTasks = tasks.map((t) => (t.id === id ? updated : t));
+      setTasks(newTasks);
+      // 状态变更后自动推送同步
+      push(newTasks);
     } catch (e) {
       setError('更新任务失败');
       console.error(e);
@@ -83,8 +109,11 @@ function App() {
     setSaving(true);
     try {
       const updated = await api.updateTask(id, { priority, dueAt });
-      setTasks((prev) => prev.map((t) => (t.id === id ? updated : t)));
+      const newTasks = tasks.map((t) => (t.id === id ? updated : t));
+      setTasks(newTasks);
       setEditingTask(null);
+      // 编辑后自动推送同步
+      push(newTasks);
     } catch (e) {
       setError('保存失败');
       console.error(e);
@@ -102,13 +131,23 @@ function App() {
       <section className="panel">
         <header className="header">
           <h1>TodoList</h1>
-          <button
-            className="theme-toggle"
-            onClick={toggleTheme}
-            aria-label={theme === 'light' ? '切换到深色模式' : '切换到浅色模式'}
-          >
-            {theme === 'light' ? 'Dark' : 'Light'}
-          </button>
+          <div className="header-actions">
+            <button
+              className="sync-btn"
+              onClick={handleSync}
+              disabled={syncing || loading}
+              aria-label="同步"
+            >
+              {syncing ? '同步中...' : 'Sync'}
+            </button>
+            <button
+              className="theme-toggle"
+              onClick={toggleTheme}
+              aria-label={theme === 'light' ? '切换到深色模式' : '切换到浅色模式'}
+            >
+              {theme === 'light' ? 'Dark' : 'Light'}
+            </button>
+          </div>
         </header>
         <AddTask onAdd={handleAdd} loading={adding} />
         {error && <p className="error">{error}</p>}

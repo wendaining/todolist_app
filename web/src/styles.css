@@ -89,6 +89,12 @@ body {
   border-bottom: 2px solid var(--border-strong);
 }
 
+.header-actions {
+  display: flex;
+  gap: 8px;
+  align-items: center;
+}
+
 h1 {
   font-family: var(--font-display);
   font-size: 36px;
@@ -109,8 +115,9 @@ h2 {
   border-bottom: 1px solid var(--border);
 }
 
-/* ========== 主题切换 ========== */
-.theme-toggle {
+/* ========== 主题切换 & 同步按钮 ========== */
+.theme-toggle,
+.sync-btn {
   font-family: var(--font-body);
   font-size: 13px;
   padding: 6px 12px;
@@ -121,9 +128,15 @@ h2 {
   transition: all 0.15s ease;
 }
 
-.theme-toggle:hover {
+.theme-toggle:hover,
+.sync-btn:hover:not(:disabled) {
   border-color: var(--border-strong);
   color: var(--ink);
+}
+
+.sync-btn:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
 }
 
 /* ========== 新建任务表单 ========== */
