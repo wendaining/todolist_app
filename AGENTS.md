@@ -96,6 +96,8 @@ Task 字段：
 
 1. Build/Test Skill: .github/skills/java-build-test/SKILL.md
 2. 推荐触发词："构建项目并测试"、"build and test"、"运行构建验证"
+3. Testing Skill: .github/skills/fullstack-testing/SKILL.md
+4. 推荐触发词："搭建测试框架"、"运行全栈测试"、"补充测试用例"
 
 ## 10. 交接模板（给下一个 Agent）
 

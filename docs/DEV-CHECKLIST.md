@@ -15,6 +15,8 @@
 4. 2026-03-31：已将 README 中个人思考迁移至独立背景文档，并完成 README 简化改写。
 5. 2026-03-31：已完成后端 Task 数据结构定义（Task + TaskStatus + TaskPriority）。
 6. 2026-03-31：执行 `cd api && mvn test` 构建成功（当前暂无测试用例）。
+7. 2026-03-31：已搭建后端 JUnit + 前端 Vitest 测试框架，并新增 Testing Skill。
+8. 2026-03-31：执行后端 `mvn test`（3/3 通过）与前端 `npm run test`（1/1 通过）。
 
 ## 0. 启动前检查
 

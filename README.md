@@ -22,4 +22,5 @@
 4. [Agent 交接入口（跨智能体）](AGENTS.md)
 5. [Agent 极速启动模板](docs/AGENT-QUICKSTART.md)
 6. [Build/Test Skill](.github/skills/java-build-test/SKILL.md)
-7. [Copilot 工作约定](.github/copilot-instructions.md)
+7. [Testing Skill](.github/skills/fullstack-testing/SKILL.md)
+8. [Copilot 工作约定](.github/copilot-instructions.md)
