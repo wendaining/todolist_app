@@ -293,14 +293,14 @@ h2 {
 .task-item::before {
   content: '';
   position: absolute;
-  left: 0;
+  left: -10px;
   top: 16px;
   bottom: 16px;
   width: 3px;
 }
 
 .task-item:hover::before {
-  left: 16px;
+  left: -10px;
 }
 
 .task-item.priority-high::before {
