@@ -69,9 +69,9 @@ export function TaskEditor({ task, onSave, onClose, saving }: TaskEditorProps) {
             </div>
           </div>
 
-          {/* 截止日期 */}
+          {/* 截止时间 */}
           <div className="form-group">
-            <label className="form-label">截止日期</label>
+            <label className="form-label">截止时间</label>
             <input
               type="datetime-local"
               className="form-input"

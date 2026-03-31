@@ -49,7 +49,7 @@ export function AddTask({ onAdd, loading }: AddTaskProps) {
           className={`due-toggle ${showDueAt || dueAt ? 'active' : ''}`}
           onClick={() => setShowDueAt(!showDueAt)}
           disabled={loading}
-          title="设置截止日期"
+          title="设置截止时间"
         >
           📅
         </button>
@@ -59,7 +59,7 @@ export function AddTask({ onAdd, loading }: AddTaskProps) {
       </div>
       {showDueAt && (
         <div className="add-task-due">
-          <label className="due-label">截止日期</label>
+          <label className="due-label">截止时间</label>
           <input
             type="datetime-local"
             className="due-input"
