@@ -3,6 +3,7 @@ import { api, Task, TaskPriority } from './api/client';
 import { AddTask } from './components/AddTask';
 import { TaskList } from './components/TaskList';
 import { TaskEditor } from './components/TaskEditor';
+import { useReminder } from './hooks/useReminder';
 
 type Theme = 'light' | 'dark';
 
@@ -28,6 +29,9 @@ function App() {
   const toggleTheme = () => {
     setTheme((prev) => (prev === 'light' ? 'dark' : 'light'));
   };
+
+  // 本地提醒：扫描即将到期任务并触发浏览器通知
+  useReminder(tasks);
 
   const loadTasks = async () => {
     try {
