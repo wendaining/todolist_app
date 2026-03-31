@@ -4,8 +4,8 @@
 
 ## 1. 当前范围
 
-1. 当前已完成任务读取主链路：Repository -> Service -> Controller（GET /tasks）。
-2. POST /tasks、PATCH /tasks/{id}、同步接口仍在待实现状态。
+1. 当前已完成任务读取与创建主链路：Repository -> Service -> Controller（GET /tasks、POST /tasks）。
+2. PATCH /tasks/{id}、同步接口仍在待实现状态。
 
 ## 2. 包结构
 
@@ -13,7 +13,7 @@
 2. com.todolist.api.task.model: Task 领域模型与枚举
 3. com.todolist.api.task.repository: 仓储接口与内存实现
 4. com.todolist.api.task.service: 任务业务服务
-5. com.todolist.api.task.dto: API 响应对象
+5. com.todolist.api.task.dto: API 请求/响应对象
 6. com.todolist.api.task.controller: 任务接口控制器
 
 ## 3. 类与枚举说明
@@ -69,22 +69,33 @@
 
 - 文件: api/src/main/java/com/todolist/api/task/repository/TaskRepository.java
 - 文件: api/src/main/java/com/todolist/api/task/repository/InMemoryTaskRepository.java
-- 作用: 定义任务读取能力，并提供当前阶段内存实现。
+- 作用: 定义任务读写能力，并提供当前阶段内存实现。
 
 ### 3.6 TaskService
 
 - 文件: api/src/main/java/com/todolist/api/task/service/TaskService.java
-- 作用: 提供任务查询业务方法 listTasks()。
+- 作用: 提供任务查询与创建业务方法（listTasks()/createTask()）。
 
-### 3.7 TaskResponse
+### 3.7 CreateTaskRequest
+
+- 文件: api/src/main/java/com/todolist/api/task/dto/CreateTaskRequest.java
+- 作用: POST /tasks 请求 DTO。
+
+字段与约束：
+
+1. title: 必填且非空白
+2. priority: 可选，未传时默认 medium
+3. dueAt: 可选
+
+### 3.8 TaskResponse
 
 - 文件: api/src/main/java/com/todolist/api/task/dto/TaskResponse.java
 - 作用: API 响应 DTO，避免直接暴露领域对象。
 
-### 3.8 TaskController
+### 3.9 TaskController
 
 - 文件: api/src/main/java/com/todolist/api/task/controller/TaskController.java
-- 作用: 暴露 GET /tasks 接口，返回任务响应数组。
+- 作用: 暴露 GET /tasks 与 POST /tasks 接口。
 
 ## 4. 计划中的最小接口（来自 SPEC）
 
@@ -94,7 +105,7 @@
 4. POST /sync/pull
 5. POST /sync/push
 
-当前状态：已实现 GET /tasks，其余接口待实现。
+当前状态：已实现 GET /tasks、POST /tasks，其余接口待实现。
 
 ### 4.1 GET /tasks
 
@@ -125,6 +136,45 @@ Host: localhost:8080
 	}
 ]
 ```
+
+### 4.2 POST /tasks
+
+- 路径: /tasks
+- 方法: POST
+- 说明: 创建新任务。
+
+请求示例：
+
+```http
+POST /tasks HTTP/1.1
+Host: localhost:8080
+Content-Type: application/json
+
+{
+	"title": "write code",
+	"priority": "medium",
+	"dueAt": null
+}
+```
+
+成功响应示例（201）：
+
+```json
+{
+	"id": "6af558d4-66a5-4a4b-95f2-4ec314920385",
+	"title": "write code",
+	"status": "todo",
+	"priority": "medium",
+	"dueAt": null,
+	"createdAt": "2026-03-31T03:20:00Z",
+	"updatedAt": "2026-03-31T03:20:00Z",
+	"completedAt": null
+}
+```
+
+失败响应：
+
+1. 400 Bad Request：title 为空或仅空白
 
 ## 5. 时间与时区约定（当前实现）
 
