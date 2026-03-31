@@ -1,8 +1,6 @@
 package com.todolist.api.task.repository;
 
 import com.todolist.api.task.model.Task;
-import org.springframework.stereotype.Repository;
-
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
@@ -10,7 +8,10 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.concurrent.ConcurrentHashMap;
 
-@Repository
+/**
+ * In-memory implementation for testing purposes only.
+ * Production uses JdbcTaskRepository.
+ */
 public class InMemoryTaskRepository implements TaskRepository {
 
     private final ConcurrentHashMap<String, ConcurrentHashMap<String, Task>> tokenSpaces = new ConcurrentHashMap<>();
