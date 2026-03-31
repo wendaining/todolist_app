@@ -2,6 +2,7 @@ package com.todolist.api.task.controller;
 
 import com.todolist.api.task.model.Task;
 import com.todolist.api.task.model.TaskPriority;
+import com.todolist.api.task.model.TaskStatus;
 import com.todolist.api.task.service.TaskService;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -11,12 +12,16 @@ import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 
 import java.util.List;
+import java.util.Optional;
 
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.ArgumentMatchers.isNull;
+import static org.mockito.ArgumentMatchers.anyBoolean;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.verifyNoInteractions;
 import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.patch;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
@@ -72,6 +77,55 @@ class TaskControllerTest {
                                 {
                                   "title": "   ",
                                   "priority": "low"
+                                }
+                                """))
+                .andExpect(status().isBadRequest());
+
+        verifyNoInteractions(taskService);
+    }
+
+    @Test
+    void updateTask_shouldReturnUpdatedTask() throws Exception {
+        Task task = Task.createNew("task-3", "write tests", TaskPriority.HIGH, null);
+        task.markDone();
+        when(taskService.updateTask(eq("task-3"), any(), any(), any(), any(), anyBoolean()))
+                .thenReturn(Optional.of(task));
+
+        mockMvc.perform(patch("/tasks/task-3")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content("""
+                                {
+                                  "status": "done"
+                                }
+                                """))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.id").value("task-3"))
+                .andExpect(jsonPath("$.status").value("done"))
+                .andExpect(jsonPath("$.completedAt").isNotEmpty());
+    }
+
+    @Test
+    void updateTask_shouldReturnNotFoundWhenTaskDoesNotExist() throws Exception {
+        when(taskService.updateTask(eq("missing-id"), any(), any(), any(), any(), anyBoolean()))
+                .thenReturn(Optional.empty());
+
+        mockMvc.perform(patch("/tasks/missing-id")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content("""
+                                {
+                                  "status": "done"
+                                }
+                                """))
+                .andExpect(status().isNotFound());
+    }
+
+    @Test
+    void updateTask_shouldReturnBadRequestWhenTitleIsBlank() throws Exception {
+        mockMvc.perform(patch("/tasks/task-3")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content("""
+                                {
+                                  "title": "   "
                                 }
                                 """))
                 .andExpect(status().isBadRequest());

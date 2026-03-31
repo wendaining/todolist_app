@@ -20,6 +20,7 @@
 9. 2026-03-31：已新增后端 API 参考文档（类职责 + 接口清单 + 时间约定）。
 10. 2026-03-31：已完成 GET /tasks 主链路（Repository/Service/Controller）并新增 MockMvc 接口测试。
 11. 2026-03-31：已完成 POST /tasks（请求校验 + service/repository 写入 + MockMvc 用例），当前静态诊断无报错；mvn test 输出通道异常，待终端恢复后补一次命令行验证证据。
+12. 2026-03-31：已完成 PATCH /tasks/{id}（状态/优先级/DDL 更新 + 404/400 场景），新增 service 单测与 controller MockMvc 用例；当前静态诊断无报错，mvn test 输出通道仍异常。
 
 ## 0. 启动前检查
 
@@ -45,8 +46,8 @@
 ### 1.1 数据与接口
 
 - [x] 定义 Task 数据结构（与 SPEC 一致）
-- [ ] 完成最小 API：POST /tasks、PATCH /tasks/{id}、GET /tasks（已完成 GET /tasks、POST /tasks）
-- [ ] 增加最小参数校验：title 非空，priority 枚举（POST 已完成，PATCH 待接入）
+- [x] 完成最小 API：POST /tasks、PATCH /tasks/{id}、GET /tasks
+- [x] 增加最小参数校验：title 非空，priority 枚举（POST/PATCH 已接入）
 
 ### 1.2 Web 最小页面
 

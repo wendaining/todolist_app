@@ -4,8 +4,8 @@
 
 ## 1. 当前范围
 
-1. 当前已完成任务读取与创建主链路：Repository -> Service -> Controller（GET /tasks、POST /tasks）。
-2. PATCH /tasks/{id}、同步接口仍在待实现状态。
+1. 当前已完成任务读取、创建、更新主链路：Repository -> Service -> Controller（GET /tasks、POST /tasks、PATCH /tasks/{id}）。
+2. 同步接口仍在待实现状态。
 
 ## 2. 包结构
 
@@ -74,7 +74,7 @@
 ### 3.6 TaskService
 
 - 文件: api/src/main/java/com/todolist/api/task/service/TaskService.java
-- 作用: 提供任务查询与创建业务方法（listTasks()/createTask()）。
+- 作用: 提供任务查询、创建、更新业务方法（listTasks()/createTask()/updateTask()）。
 
 ### 3.7 CreateTaskRequest
 
@@ -92,10 +92,22 @@
 - 文件: api/src/main/java/com/todolist/api/task/dto/TaskResponse.java
 - 作用: API 响应 DTO，避免直接暴露领域对象。
 
-### 3.9 TaskController
+### 3.9 UpdateTaskRequest
+
+- 文件: api/src/main/java/com/todolist/api/task/dto/UpdateTaskRequest.java
+- 作用: PATCH /tasks/{id} 请求 DTO。
+
+字段与约束：
+
+1. title: 可选；若提供则必须非空白
+2. status: 可选（todo/done）
+3. priority: 可选（high/medium/low）
+4. dueAt: 可选；可显式传 null 清空 DDL
+
+### 3.10 TaskController
 
 - 文件: api/src/main/java/com/todolist/api/task/controller/TaskController.java
-- 作用: 暴露 GET /tasks 与 POST /tasks 接口。
+- 作用: 暴露 GET /tasks、POST /tasks、PATCH /tasks/{id} 接口。
 
 ## 4. 计划中的最小接口（来自 SPEC）
 
@@ -105,7 +117,7 @@
 4. POST /sync/pull
 5. POST /sync/push
 
-当前状态：已实现 GET /tasks、POST /tasks，其余接口待实现。
+当前状态：已实现 GET /tasks、POST /tasks、PATCH /tasks/{id}，其余接口待实现。
 
 ### 4.1 GET /tasks
 
@@ -175,6 +187,46 @@ Content-Type: application/json
 失败响应：
 
 1. 400 Bad Request：title 为空或仅空白
+
+### 4.3 PATCH /tasks/{id}
+
+- 路径: /tasks/{id}
+- 方法: PATCH
+- 说明: 局部更新任务字段（title/status/priority/dueAt）。
+
+请求示例：
+
+```http
+PATCH /tasks/task-3 HTTP/1.1
+Host: localhost:8080
+Content-Type: application/json
+
+{
+	"status": "done",
+	"priority": "high",
+	"dueAt": "2026-04-01T10:15:30+08:00"
+}
+```
+
+成功响应示例（200）：
+
+```json
+{
+	"id": "task-3",
+	"title": "write tests",
+	"status": "done",
+	"priority": "high",
+	"dueAt": "2026-04-01T10:15:30+08:00",
+	"createdAt": "2026-03-31T03:30:00Z",
+	"updatedAt": "2026-03-31T03:35:00Z",
+	"completedAt": "2026-03-31T03:35:00Z"
+}
+```
+
+失败响应：
+
+1. 400 Bad Request：title 为空白或 status/priority 取值非法
+2. 404 Not Found：任务不存在
 
 ## 5. 时间与时区约定（当前实现）
 
