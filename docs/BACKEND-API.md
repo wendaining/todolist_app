@@ -4,13 +4,17 @@
 
 ## 1. 当前范围
 
-1. 当前仅完成领域模型层（task model）与应用启动类。
-2. Controller/Service/Repository 接口尚未实现，计划在 M1 下一步补齐。
+1. 当前已完成任务读取主链路：Repository -> Service -> Controller（GET /tasks）。
+2. POST /tasks、PATCH /tasks/{id}、同步接口仍在待实现状态。
 
 ## 2. 包结构
 
 1. com.todolist.api: 应用启动入口
 2. com.todolist.api.task.model: Task 领域模型与枚举
+3. com.todolist.api.task.repository: 仓储接口与内存实现
+4. com.todolist.api.task.service: 任务业务服务
+5. com.todolist.api.task.dto: API 响应对象
+6. com.todolist.api.task.controller: 任务接口控制器
 
 ## 3. 类与枚举说明
 
@@ -61,6 +65,27 @@
 1. @JsonValue: 序列化时输出小写值（high/medium/low）
 2. @JsonCreator: 反序列化时支持从字符串解析枚举
 
+### 3.5 TaskRepository / InMemoryTaskRepository
+
+- 文件: api/src/main/java/com/todolist/api/task/repository/TaskRepository.java
+- 文件: api/src/main/java/com/todolist/api/task/repository/InMemoryTaskRepository.java
+- 作用: 定义任务读取能力，并提供当前阶段内存实现。
+
+### 3.6 TaskService
+
+- 文件: api/src/main/java/com/todolist/api/task/service/TaskService.java
+- 作用: 提供任务查询业务方法 listTasks()。
+
+### 3.7 TaskResponse
+
+- 文件: api/src/main/java/com/todolist/api/task/dto/TaskResponse.java
+- 作用: API 响应 DTO，避免直接暴露领域对象。
+
+### 3.8 TaskController
+
+- 文件: api/src/main/java/com/todolist/api/task/controller/TaskController.java
+- 作用: 暴露 GET /tasks 接口，返回任务响应数组。
+
 ## 4. 计划中的最小接口（来自 SPEC）
 
 1. POST /tasks
@@ -69,7 +94,37 @@
 4. POST /sync/pull
 5. POST /sync/push
 
-当前状态：上述接口尚未实现，完成后需在本文件补充每个接口的请求/响应示例。
+当前状态：已实现 GET /tasks，其余接口待实现。
+
+### 4.1 GET /tasks
+
+- 路径: /tasks
+- 方法: GET
+- 说明: 获取当前任务列表。
+
+请求示例：
+
+```http
+GET /tasks HTTP/1.1
+Host: localhost:8080
+```
+
+成功响应示例（200）：
+
+```json
+[
+	{
+		"id": "task-1",
+		"title": "read spec",
+		"status": "todo",
+		"priority": "high",
+		"dueAt": null,
+		"createdAt": "2026-03-31T03:10:00Z",
+		"updatedAt": "2026-03-31T03:10:00Z",
+		"completedAt": null
+	}
+]
+```
 
 ## 5. 时间与时区约定（当前实现）
 

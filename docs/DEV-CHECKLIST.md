@@ -18,6 +18,7 @@
 7. 2026-03-31：已搭建后端 JUnit + 前端 Vitest 测试框架，并新增 Testing Skill。
 8. 2026-03-31：执行后端 `mvn test`（3/3 通过）与前端 `npm run test`（1/1 通过）。
 9. 2026-03-31：已新增后端 API 参考文档（类职责 + 接口清单 + 时间约定）。
+10. 2026-03-31：已完成 GET /tasks 主链路（Repository/Service/Controller）并新增 MockMvc 接口测试。
 
 ## 0. 启动前检查
 
@@ -43,7 +44,7 @@
 ### 1.1 数据与接口
 
 - [x] 定义 Task 数据结构（与 SPEC 一致）
-- [ ] 完成最小 API：POST /tasks、PATCH /tasks/{id}、GET /tasks
+- [ ] 完成最小 API：POST /tasks、PATCH /tasks/{id}、GET /tasks（已完成 GET /tasks）
 - [ ] 增加最小参数校验：title 非空，priority 枚举
 
 ### 1.2 Web 最小页面
