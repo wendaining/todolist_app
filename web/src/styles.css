@@ -30,11 +30,211 @@ body {
 }
 
 h1 {
-  margin: 0 0 12px;
+  margin: 0 0 20px;
   font-size: 28px;
+}
+
+h2 {
+  margin: 20px 0 12px;
+  font-size: 16px;
+  color: #5a6d7e;
+  font-weight: 500;
 }
 
 p {
   margin: 0;
   line-height: 1.6;
+}
+
+/* 新建任务表单 */
+.add-task {
+  display: flex;
+  gap: 8px;
+  margin-bottom: 16px;
+}
+
+.task-input {
+  flex: 1;
+  padding: 10px 14px;
+  font-size: 15px;
+  border: 1px solid #c7def0;
+  border-radius: 8px;
+  outline: none;
+  transition: border-color 0.2s;
+}
+
+.task-input:focus {
+  border-color: #3b8ed0;
+}
+
+.priority-select {
+  padding: 10px 12px;
+  font-size: 14px;
+  border: 1px solid #c7def0;
+  border-radius: 8px;
+  background: white;
+  cursor: pointer;
+}
+
+.add-btn {
+  padding: 10px 20px;
+  font-size: 15px;
+  font-weight: 500;
+  color: white;
+  background: #3b8ed0;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: background 0.2s;
+}
+
+.add-btn:hover:not(:disabled) {
+  background: #2a7bc0;
+}
+
+.add-btn:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+/* 任务列表 */
+.task-list {
+  margin-top: 8px;
+}
+
+.task-section {
+  margin-bottom: 16px;
+}
+
+.tasks {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+.task-item {
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+  padding: 12px;
+  background: #f8fbff;
+  border: 1px solid #e3eef6;
+  border-radius: 8px;
+  margin-bottom: 8px;
+  transition: background 0.2s;
+}
+
+.task-item:hover {
+  background: #eef6fc;
+}
+
+.task-item.done {
+  opacity: 0.6;
+}
+
+.task-item.done .task-title {
+  text-decoration: line-through;
+  color: #8a9aa8;
+}
+
+/* 复选框 */
+.task-checkbox {
+  position: relative;
+  display: flex;
+  align-items: center;
+  cursor: pointer;
+}
+
+.task-checkbox input {
+  position: absolute;
+  opacity: 0;
+  width: 20px;
+  height: 20px;
+  cursor: pointer;
+}
+
+.checkmark {
+  width: 20px;
+  height: 20px;
+  border: 2px solid #b0c4d4;
+  border-radius: 4px;
+  transition: all 0.2s;
+}
+
+.task-checkbox input:checked + .checkmark {
+  background: #3b8ed0;
+  border-color: #3b8ed0;
+}
+
+.task-checkbox input:checked + .checkmark::after {
+  content: '✓';
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: white;
+  font-size: 12px;
+  font-weight: bold;
+}
+
+/* 任务内容 */
+.task-content {
+  flex: 1;
+}
+
+.task-title {
+  font-size: 15px;
+  line-height: 1.4;
+}
+
+.task-meta {
+  display: flex;
+  gap: 12px;
+  margin-top: 4px;
+  font-size: 12px;
+}
+
+.priority {
+  padding: 2px 8px;
+  border-radius: 4px;
+  font-weight: 500;
+}
+
+.priority-high {
+  background: #ffe0e0;
+  color: #c53030;
+}
+
+.priority-medium {
+  background: #fff3d0;
+  color: #b7791f;
+}
+
+.priority-low {
+  background: #e0f0e0;
+  color: #2f855a;
+}
+
+.due-date {
+  color: #6b7c8a;
+}
+
+/* 状态提示 */
+.empty-hint {
+  color: #8a9aa8;
+  font-size: 14px;
+  padding: 8px 0;
+}
+
+.loading {
+  text-align: center;
+  color: #5a6d7e;
+  padding: 24px;
+}
+
+.error {
+  color: #c53030;
+  background: #ffe0e0;
+  padding: 10px 14px;
+  border-radius: 8px;
+  margin-bottom: 12px;
 }
