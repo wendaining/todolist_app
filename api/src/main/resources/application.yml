@@ -4,3 +4,9 @@ server:
 spring:
   application:
     name: todolist-api
+
+app:
+  security:
+    bootstrapTokens: dev-token-change-me
+    tokenTtlHours: 720
+    rateLimitPerMinute: 120

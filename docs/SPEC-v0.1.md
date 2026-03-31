@@ -47,7 +47,17 @@
 1. 不使用账号密码
 2. 每个用户空间由 Token 标识
 3. 请求必须带 Token（通过请求头 X-Token 传递）
-4. Token 支持轮换和吊销（后续迭代可先占位）
+4. Token 必须覆盖所有任务与同步接口（/tasks/**, /sync/**）
+5. 服务端仅保存 Token 哈希值，不保存明文
+6. Token 支持过期时间与吊销状态
+7. Token 支持轮换与吊销
+
+## 6.2 限流规则（M2）
+
+1. 维度：按 Token 做限流
+2. 策略：固定时间窗口（每分钟）
+3. 默认阈值：每个 Token 每分钟 120 次请求（后续可配置）
+4. 超限响应：429 Too Many Requests
 
 ## 6.1 同步接口最小契约（M2）
 
@@ -71,6 +81,11 @@
 3. GET /tasks
 4. POST /sync/pull
 5. POST /sync/push
+
+### 安全辅助接口（M2+）
+
+1. POST /auth/token/rotate
+2. POST /auth/token/revoke
 
 ## 8. 验收标准
 

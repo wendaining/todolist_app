@@ -22,6 +22,7 @@
 11. 2026-03-31：已完成 POST /tasks（请求校验 + service/repository 写入 + MockMvc 用例），当前静态诊断无报错；mvn test 输出通道异常，待终端恢复后补一次命令行验证证据。
 12. 2026-03-31：已完成 PATCH /tasks/{id}（状态/优先级/DDL 更新 + 404/400 场景），新增 service 单测与 controller MockMvc 用例；当前静态诊断无报错，mvn test 输出通道仍异常。
 13. 2026-03-31：已完成同步接口 POST /sync/pull、POST /sync/push，接入 X-Token 空间隔离与 LWW（updatedAt）合并；新增 sync service/controller 测试，当前静态诊断无报错，mvn test 输出通道仍异常。
+14. 2026-03-31：已完成鉴权/限流加固：tasks+sync 全接口统一 Token 校验，服务端仅存 Token 哈希，支持过期/吊销/轮换，新增按 Token 每分钟固定窗口限流（超限 429），并补充 auth/security 测试。
 
 ## 0. 启动前检查
 
@@ -81,7 +82,8 @@
 
 - [x] 请求头携带 Token（X-Token）
 - [x] 后端按 Token 进行空间隔离
-- [ ] 预留 Token 轮换/吊销字段（可先占位）
+- [x] Token 轮换/吊销接口（POST /auth/token/rotate, POST /auth/token/revoke）
+- [x] 按 Token 限流（固定窗口：每分钟）
 
 ### 2.3 M2 验收
 

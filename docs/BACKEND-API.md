@@ -6,6 +6,7 @@
 
 1. 当前已完成任务读取、创建、更新主链路：Repository -> Service -> Controller（GET /tasks、POST /tasks、PATCH /tasks/{id}）。
 2. 当前已完成同步最小主链路（POST /sync/pull、POST /sync/push），支持 X-Token 空间隔离与 LWW 合并。
+3. 当前已完成安全加固最小主链路：Token 哈希存储、过期/吊销、每 Token 每分钟限流、Token 轮换/吊销接口。
 
 ## 2. 包结构
 
@@ -18,6 +19,9 @@
 7. com.todolist.api.sync.dto: 同步请求/响应对象
 8. com.todolist.api.sync.service: 同步服务（Token 空间与 LWW）
 9. com.todolist.api.sync.controller: 同步接口控制器
+10. com.todolist.api.security.service: Token 鉴权与限流服务
+11. com.todolist.api.security.controller: Token 轮换/吊销接口
+12. com.todolist.api.security.dto: 鉴权响应 DTO
 
 ## 3. 类与枚举说明
 
@@ -138,7 +142,25 @@
 关键点：
 
 1. 使用请求头 X-Token 识别用户空间
-2. X-Token 空白时返回 400
+2. X-Token 缺失/空白或无效时返回 401
+
+### 3.14 TokenSecurityService
+
+- 文件: api/src/main/java/com/todolist/api/security/service/TokenSecurityService.java
+- 作用: 统一处理 Token 鉴权、过期/吊销校验、哈希存储、限流与轮换。
+
+关键点：
+
+1. 服务端仅存储 Token 哈希
+2. 支持 Token 过期时间与吊销状态
+3. 限流策略：每 Token 每分钟固定窗口计数
+4. 超限返回 429
+
+### 3.15 AuthController / TokenRotateResponse
+
+- 文件: api/src/main/java/com/todolist/api/security/controller/AuthController.java
+- 文件: api/src/main/java/com/todolist/api/security/dto/TokenRotateResponse.java
+- 作用: 提供 Token 轮换与吊销接口。
 
 ## 4. 计划中的最小接口（来自 SPEC）
 
@@ -150,10 +172,13 @@
 
 当前状态：最小 API 已全部实现（POST /tasks、PATCH /tasks/{id}、GET /tasks、POST /sync/pull、POST /sync/push）。
 
+安全辅助接口当前状态：已实现 POST /auth/token/rotate、POST /auth/token/revoke。
+
 ### 4.1 GET /tasks
 
 - 路径: /tasks
 - 方法: GET
+- Header: X-Token: <token>
 - 说明: 获取当前任务列表。
 
 请求示例：
@@ -161,6 +186,7 @@
 ```http
 GET /tasks HTTP/1.1
 Host: localhost:8080
+X-Token: token-demo
 ```
 
 成功响应示例（200）：
@@ -184,6 +210,7 @@ Host: localhost:8080
 
 - 路径: /tasks
 - 方法: POST
+- Header: X-Token: <token>
 - 说明: 创建新任务。
 
 请求示例：
@@ -191,6 +218,7 @@ Host: localhost:8080
 ```http
 POST /tasks HTTP/1.1
 Host: localhost:8080
+X-Token: token-demo
 Content-Type: application/json
 
 {
@@ -218,11 +246,14 @@ Content-Type: application/json
 失败响应：
 
 1. 400 Bad Request：title 为空或仅空白
+2. 401 Unauthorized：X-Token 缺失/空白或无效
+3. 429 Too Many Requests：Token 请求超过限流阈值
 
 ### 4.3 PATCH /tasks/{id}
 
 - 路径: /tasks/{id}
 - 方法: PATCH
+- Header: X-Token: <token>
 - 说明: 局部更新任务字段（title/status/priority/dueAt）。
 
 请求示例：
@@ -230,6 +261,7 @@ Content-Type: application/json
 ```http
 PATCH /tasks/task-3 HTTP/1.1
 Host: localhost:8080
+X-Token: token-demo
 Content-Type: application/json
 
 {
@@ -258,6 +290,8 @@ Content-Type: application/json
 
 1. 400 Bad Request：title 为空白或 status/priority 取值非法
 2. 404 Not Found：任务不存在
+3. 401 Unauthorized：X-Token 缺失/空白或无效
+4. 429 Too Many Requests：Token 请求超过限流阈值
 
 ### 4.4 POST /sync/pull
 
@@ -299,7 +333,8 @@ Content-Type: application/json
 
 失败响应：
 
-1. 400 Bad Request：缺少 X-Token 或值为空白
+1. 401 Unauthorized：X-Token 缺失/空白或无效
+2. 429 Too Many Requests：Token 请求超过限流阈值
 
 ### 4.5 POST /sync/push
 
@@ -354,7 +389,44 @@ Content-Type: application/json
 
 失败响应：
 
-1. 400 Bad Request：X-Token 缺失/空白，或 tasks 缺失，或任务字段非法
+1. 400 Bad Request：tasks 缺失或任务字段非法
+2. 401 Unauthorized：X-Token 缺失/空白或无效
+3. 429 Too Many Requests：Token 请求超过限流阈值
+
+### 4.6 POST /auth/token/rotate
+
+- 路径: /auth/token/rotate
+- 方法: POST
+- Header: X-Token: <token>
+- 说明: 轮换当前 Token，返回新 Token 与过期时间。
+
+成功响应示例（200）：
+
+```json
+{
+	"token": "new-generated-token",
+	"expiresAt": "2026-04-30T00:00:00Z"
+}
+```
+
+失败响应：
+
+1. 401 Unauthorized：X-Token 缺失/空白或无效
+2. 429 Too Many Requests：Token 请求超过限流阈值
+
+### 4.7 POST /auth/token/revoke
+
+- 路径: /auth/token/revoke
+- 方法: POST
+- Header: X-Token: <token>
+- 说明: 吊销当前 Token。
+
+成功响应：204 No Content
+
+失败响应：
+
+1. 401 Unauthorized：X-Token 缺失/空白或无效
+2. 429 Too Many Requests：Token 请求超过限流阈值
 
 ## 5. 时间与时区约定（当前实现）
 

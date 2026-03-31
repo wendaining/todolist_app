@@ -1,5 +1,6 @@
 package com.todolist.api.sync.controller;
 
+import com.todolist.api.security.service.TokenSecurityService;
 import com.todolist.api.sync.service.SyncService;
 import com.todolist.api.task.model.Task;
 import com.todolist.api.task.model.TaskPriority;
@@ -9,6 +10,7 @@ import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
+import org.springframework.web.server.ResponseStatusException;
 
 import java.util.List;
 
@@ -16,6 +18,7 @@ import static org.mockito.ArgumentMatchers.anyList;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.verifyNoInteractions;
 import static org.mockito.Mockito.when;
+import static org.springframework.http.HttpStatus.UNAUTHORIZED;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
@@ -29,10 +32,14 @@ class SyncControllerTest {
     @MockBean
     private SyncService syncService;
 
+    @MockBean
+    private TokenSecurityService tokenSecurityService;
+
     @Test
     void pull_shouldReturnTokenScopedTasks() throws Exception {
         Task task = Task.createNew("sync-1", "from cloud", TaskPriority.MEDIUM, null);
-        when(syncService.pull("token-1")).thenReturn(List.of(task));
+        when(tokenSecurityService.authenticateAndConsume("token-1")).thenReturn("token-key-1");
+        when(syncService.pull("token-key-1")).thenReturn(List.of(task));
 
         mockMvc.perform(post("/sync/pull")
                         .header("X-Token", "token-1")
@@ -47,7 +54,8 @@ class SyncControllerTest {
     @Test
     void push_shouldMergeAndReturnTasks() throws Exception {
         Task mergedTask = Task.createNew("sync-2", "merged", TaskPriority.HIGH, null);
-        when(syncService.push(eq("token-1"), anyList())).thenReturn(List.of(mergedTask));
+        when(tokenSecurityService.authenticateAndConsume("token-1")).thenReturn("token-key-1");
+        when(syncService.push(eq("token-key-1"), anyList())).thenReturn(List.of(mergedTask));
 
         mockMvc.perform(post("/sync/push")
                         .header("X-Token", "token-1")
@@ -76,22 +84,41 @@ class SyncControllerTest {
 
     @Test
     void push_shouldReturnBadRequestWhenTokenBlank() throws Exception {
+        when(tokenSecurityService.authenticateAndConsume("   "))
+                .thenThrow(new ResponseStatusException(UNAUTHORIZED, "X-Token header is required"));
+
         mockMvc.perform(post("/sync/push")
                         .header("X-Token", "   ")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content("{" + "\"tasks\": []}"))
-                .andExpect(status().isBadRequest());
+          .andExpect(status().isUnauthorized());
 
         verifyNoInteractions(syncService);
     }
 
     @Test
     void push_shouldReturnBadRequestWhenTasksMissing() throws Exception {
+        when(tokenSecurityService.authenticateAndConsume("token-1")).thenReturn("token-key-1");
+
         mockMvc.perform(post("/sync/push")
                         .header("X-Token", "token-1")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content("{}"))
                 .andExpect(status().isBadRequest());
+
+        verifyNoInteractions(syncService);
+    }
+
+    @Test
+    void pull_shouldReturnUnauthorizedWhenTokenInvalid() throws Exception {
+        when(tokenSecurityService.authenticateAndConsume("bad-token"))
+                .thenThrow(new ResponseStatusException(UNAUTHORIZED, "invalid token"));
+
+        mockMvc.perform(post("/sync/pull")
+                        .header("X-Token", "bad-token")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content("{}"))
+                .andExpect(status().isUnauthorized());
 
         verifyNoInteractions(syncService);
     }

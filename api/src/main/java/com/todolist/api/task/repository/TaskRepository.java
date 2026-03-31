@@ -7,9 +7,9 @@ import java.util.Optional;
 
 public interface TaskRepository {
 
-    List<Task> findAll();
+    List<Task> findAll(String tokenKey);
 
-    Optional<Task> findById(String id);
+    Optional<Task> findById(String tokenKey, String id);
 
-    Task save(Task task);
+    Task save(String tokenKey, Task task);
 }

@@ -20,10 +20,11 @@ class TaskServiceTest {
         InMemoryTaskRepository repository = new InMemoryTaskRepository();
         TaskService service = new TaskService(repository);
         Task task = Task.createNew("task-1", "learn patch", TaskPriority.LOW, null);
-        repository.save(task);
+        repository.save("token-a", task);
         OffsetDateTime dueAt = OffsetDateTime.parse("2026-04-01T10:15:30+08:00");
 
         Optional<Task> updated = service.updateTask(
+            "token-a",
                 "task-1",
                 null,
                 TaskStatus.DONE,
@@ -44,6 +45,7 @@ class TaskServiceTest {
         TaskService service = new TaskService(new InMemoryTaskRepository());
 
         Optional<Task> updated = service.updateTask(
+            "token-a",
                 "not-exists",
                 "new title",
                 null,

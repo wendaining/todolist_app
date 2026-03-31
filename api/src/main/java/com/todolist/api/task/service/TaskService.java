@@ -20,16 +20,17 @@ public class TaskService {
         this.taskRepository = taskRepository;
     }
 
-    public List<Task> listTasks() {
-        return taskRepository.findAll();
+    public List<Task> listTasks(String tokenKey) {
+        return taskRepository.findAll(tokenKey);
     }
 
-    public Task createTask(String title, TaskPriority priority, OffsetDateTime dueAt) {
+    public Task createTask(String tokenKey, String title, TaskPriority priority, OffsetDateTime dueAt) {
         Task task = Task.createNew(UUID.randomUUID().toString(), title, priority, dueAt);
-        return taskRepository.save(task);
+        return taskRepository.save(tokenKey, task);
     }
 
     public Optional<Task> updateTask(
+            String tokenKey,
             String id,
             String title,
             TaskStatus status,
@@ -37,7 +38,7 @@ public class TaskService {
             OffsetDateTime dueAt,
             boolean dueAtPresent
     ) {
-        Optional<Task> taskOptional = taskRepository.findById(id);
+        Optional<Task> taskOptional = taskRepository.findById(tokenKey, id);
         if (taskOptional.isEmpty()) {
             return Optional.empty();
         }
@@ -64,6 +65,6 @@ public class TaskService {
             task.setDueAt(dueAt);
         }
 
-        return Optional.of(task);
+        return Optional.of(taskRepository.save(tokenKey, task));
     }
 }
