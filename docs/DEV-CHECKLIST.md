@@ -25,6 +25,7 @@
 14. 2026-03-31：已完成鉴权/限流加固：tasks+sync 全接口统一 Token 校验，服务端仅存 Token 哈希，支持过期/吊销/轮换，新增按 Token 每分钟固定窗口限流（超限 429），并补充 auth/security 测试。
 15. 2026-03-31：已完成安全状态 SQLite 持久化：Token 元数据和限流窗口改由 JDBC 持久化（schema.sql 自动建表），服务重启后安全状态不再全丢。
 16. 2026-03-31：已新增离线可验证集成测试（SpringBootTest + SQLite 临时库）：覆盖“重建服务后 Token 元数据仍可鉴权”与“重建存储后限流窗口计数仍连续”，用于在终端输出异常时提供断言级验收证据。
+17. 2026-03-31：修复 TokenSecurityService 多构造器引发的 Spring Bean 实例化歧义（No default constructor found）：为主构造器显式添加 @Autowired，恢复 SpringBootTest 上下文加载。
 
 ## 0. 启动前检查
 

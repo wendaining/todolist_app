@@ -3,6 +3,7 @@ package com.todolist.api.security.service;
 import com.todolist.api.security.store.InMemoryTokenStateStore;
 import com.todolist.api.security.store.TokenMetadata;
 import com.todolist.api.security.store.TokenStateStore;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
@@ -24,6 +25,7 @@ public class TokenSecurityService {
     private final int tokenTtlHours;
     private final int rateLimitPerMinute;
 
+    @Autowired
     public TokenSecurityService(
             TokenStateStore tokenStateStore,
             @Value("${app.security.bootstrapTokens:dev-token-change-me}") String bootstrapTokens,
