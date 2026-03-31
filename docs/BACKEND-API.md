@@ -5,7 +5,7 @@
 ## 1. 当前范围
 
 1. 当前已完成任务读取、创建、更新主链路：Repository -> Service -> Controller（GET /tasks、POST /tasks、PATCH /tasks/{id}）。
-2. 同步接口仍在待实现状态。
+2. 当前已完成同步最小主链路（POST /sync/pull、POST /sync/push），支持 X-Token 空间隔离与 LWW 合并。
 
 ## 2. 包结构
 
@@ -15,6 +15,9 @@
 4. com.todolist.api.task.service: 任务业务服务
 5. com.todolist.api.task.dto: API 请求/响应对象
 6. com.todolist.api.task.controller: 任务接口控制器
+7. com.todolist.api.sync.dto: 同步请求/响应对象
+8. com.todolist.api.sync.service: 同步服务（Token 空间与 LWW）
+9. com.todolist.api.sync.controller: 同步接口控制器
 
 ## 3. 类与枚举说明
 
@@ -109,6 +112,34 @@
 - 文件: api/src/main/java/com/todolist/api/task/controller/TaskController.java
 - 作用: 暴露 GET /tasks、POST /tasks、PATCH /tasks/{id} 接口。
 
+### 3.11 SyncTaskPayload / SyncPushRequest / SyncResponse
+
+- 文件: api/src/main/java/com/todolist/api/sync/dto/SyncTaskPayload.java
+- 文件: api/src/main/java/com/todolist/api/sync/dto/SyncPushRequest.java
+- 文件: api/src/main/java/com/todolist/api/sync/dto/SyncResponse.java
+- 作用: 定义同步入参与出参。
+
+关键点：
+
+1. SyncPushRequest.tasks 必填
+2. SyncTaskPayload 字段与 Task 对齐，含 createdAt/updatedAt
+3. SyncResponse 返回 tasks 与 serverTime
+
+### 3.12 SyncService
+
+- 文件: api/src/main/java/com/todolist/api/sync/service/SyncService.java
+- 作用: 管理 Token 空间下的任务集合，并在 push 时按 updatedAt 做 LWW 合并。
+
+### 3.13 SyncController
+
+- 文件: api/src/main/java/com/todolist/api/sync/controller/SyncController.java
+- 作用: 暴露 POST /sync/pull、POST /sync/push。
+
+关键点：
+
+1. 使用请求头 X-Token 识别用户空间
+2. X-Token 空白时返回 400
+
 ## 4. 计划中的最小接口（来自 SPEC）
 
 1. POST /tasks
@@ -117,7 +148,7 @@
 4. POST /sync/pull
 5. POST /sync/push
 
-当前状态：已实现 GET /tasks、POST /tasks、PATCH /tasks/{id}，其余接口待实现。
+当前状态：最小 API 已全部实现（POST /tasks、PATCH /tasks/{id}、GET /tasks、POST /sync/pull、POST /sync/push）。
 
 ### 4.1 GET /tasks
 
@@ -227,6 +258,103 @@ Content-Type: application/json
 
 1. 400 Bad Request：title 为空白或 status/priority 取值非法
 2. 404 Not Found：任务不存在
+
+### 4.4 POST /sync/pull
+
+- 路径: /sync/pull
+- 方法: POST
+- Header: X-Token: <token>
+- 说明: 拉取指定 Token 空间的全部任务。
+
+请求示例：
+
+```http
+POST /sync/pull HTTP/1.1
+Host: localhost:8080
+X-Token: token-demo
+Content-Type: application/json
+
+{}
+```
+
+成功响应示例（200）：
+
+```json
+{
+	"tasks": [
+		{
+			"id": "sync-1",
+			"title": "from cloud",
+			"status": "todo",
+			"priority": "medium",
+			"dueAt": null,
+			"createdAt": "2026-03-31T03:00:00Z",
+			"updatedAt": "2026-03-31T03:30:00Z",
+			"completedAt": null
+		}
+	],
+	"serverTime": "2026-03-31T04:00:00Z"
+}
+```
+
+失败响应：
+
+1. 400 Bad Request：缺少 X-Token 或值为空白
+
+### 4.5 POST /sync/push
+
+- 路径: /sync/push
+- 方法: POST
+- Header: X-Token: <token>
+- 说明: 推送客户端任务并按 updatedAt 执行 LWW 合并。
+
+请求示例：
+
+```http
+POST /sync/push HTTP/1.1
+Host: localhost:8080
+X-Token: token-demo
+Content-Type: application/json
+
+{
+	"tasks": [
+		{
+			"id": "sync-2",
+			"title": "merged",
+			"status": "todo",
+			"priority": "high",
+			"dueAt": null,
+			"createdAt": "2026-03-31T03:00:00Z",
+			"updatedAt": "2026-03-31T03:30:00Z",
+			"completedAt": null
+		}
+	]
+}
+```
+
+成功响应示例（200）：
+
+```json
+{
+	"tasks": [
+		{
+			"id": "sync-2",
+			"title": "merged",
+			"status": "todo",
+			"priority": "high",
+			"dueAt": null,
+			"createdAt": "2026-03-31T03:00:00Z",
+			"updatedAt": "2026-03-31T03:30:00Z",
+			"completedAt": null
+		}
+	],
+	"serverTime": "2026-03-31T04:00:00Z"
+}
+```
+
+失败响应：
+
+1. 400 Bad Request：X-Token 缺失/空白，或 tasks 缺失，或任务字段非法
 
 ## 5. 时间与时区约定（当前实现）
 

@@ -46,8 +46,23 @@
 
 1. 不使用账号密码
 2. 每个用户空间由 Token 标识
-3. 请求必须带 Token
+3. 请求必须带 Token（通过请求头 X-Token 传递）
 4. Token 支持轮换和吊销（后续迭代可先占位）
+
+## 6.1 同步接口最小契约（M2）
+
+### POST /sync/pull
+
+1. Header: X-Token: <token>
+2. Body: 可为空对象 {}
+3. Response: 返回该 Token 空间下的全部任务列表与服务器时间
+
+### POST /sync/push
+
+1. Header: X-Token: <token>
+2. Body: tasks 数组（字段与 Task 一致）
+3. 处理规则: 使用 updatedAt 进行 LWW 合并
+4. Response: 返回合并后的全部任务列表与服务器时间
 
 ## 7. API 最小清单
 

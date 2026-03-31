@@ -21,6 +21,7 @@
 10. 2026-03-31：已完成 GET /tasks 主链路（Repository/Service/Controller）并新增 MockMvc 接口测试。
 11. 2026-03-31：已完成 POST /tasks（请求校验 + service/repository 写入 + MockMvc 用例），当前静态诊断无报错；mvn test 输出通道异常，待终端恢复后补一次命令行验证证据。
 12. 2026-03-31：已完成 PATCH /tasks/{id}（状态/优先级/DDL 更新 + 404/400 场景），新增 service 单测与 controller MockMvc 用例；当前静态诊断无报错，mvn test 输出通道仍异常。
+13. 2026-03-31：已完成同步接口 POST /sync/pull、POST /sync/push，接入 X-Token 空间隔离与 LWW（updatedAt）合并；新增 sync service/controller 测试，当前静态诊断无报错，mvn test 输出通道仍异常。
 
 ## 0. 启动前检查
 
@@ -72,14 +73,14 @@
 
 ### 2.1 同步接口
 
-- [ ] POST /sync/pull
-- [ ] POST /sync/push
-- [ ] 最后写入优先（LWW）冲突策略
+- [x] POST /sync/pull
+- [x] POST /sync/push
+- [x] 最后写入优先（LWW）冲突策略
 
 ### 2.2 Token 机制
 
-- [ ] 请求头携带 Token
-- [ ] 后端按 Token 进行空间隔离
+- [x] 请求头携带 Token（X-Token）
+- [x] 后端按 Token 进行空间隔离
 - [ ] 预留 Token 轮换/吊销字段（可先占位）
 
 ### 2.3 M2 验收
