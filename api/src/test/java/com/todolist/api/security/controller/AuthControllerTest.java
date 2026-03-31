@@ -33,8 +33,7 @@ class AuthControllerTest {
                 ));
 
         mockMvc.perform(post("/auth/token/rotate")
-                        .header("X-Token", "token-old")
-                        .contentType(MediaType.APPLICATION_JSON))
+                        .header("X-Token", "token-old"))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.token").value("token-new"))
                 .andExpect(jsonPath("$.expiresAt").value("2026-04-30T00:00:00Z"));
@@ -43,8 +42,7 @@ class AuthControllerTest {
     @Test
     void revoke_shouldReturnNoContent() throws Exception {
         mockMvc.perform(post("/auth/token/revoke")
-                        .header("X-Token", "token-old")
-                        .contentType(MediaType.APPLICATION_JSON))
+                        .header("X-Token", "token-old"))
                 .andExpect(status().isNoContent());
     }
 }
