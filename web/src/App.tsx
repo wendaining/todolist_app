@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react';
 import { api, Task, TaskPriority } from './api/client';
 import { AddTask } from './components/AddTask';
 import { TaskList } from './components/TaskList';
+import { TaskEditor } from './components/TaskEditor';
 
 type Theme = 'light' | 'dark';
 
@@ -10,6 +11,8 @@ function App() {
   const [loading, setLoading] = useState(true);
   const [adding, setAdding] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [editingTask, setEditingTask] = useState<Task | null>(null);
+  const [saving, setSaving] = useState(false);
   const [theme, setTheme] = useState<Theme>(() => {
     const saved = localStorage.getItem('theme') as Theme | null;
     if (saved) return saved;
@@ -68,6 +71,28 @@ function App() {
     }
   };
 
+  const handleEdit = (task: Task) => {
+    setEditingTask(task);
+  };
+
+  const handleSaveEdit = async (id: string, priority: TaskPriority, dueAt: string | null) => {
+    setSaving(true);
+    try {
+      const updated = await api.updateTask(id, { priority, dueAt });
+      setTasks((prev) => prev.map((t) => (t.id === id ? updated : t)));
+      setEditingTask(null);
+    } catch (e) {
+      setError('保存失败');
+      console.error(e);
+    } finally {
+      setSaving(false);
+    }
+  };
+
+  const handleCloseEditor = () => {
+    setEditingTask(null);
+  };
+
   return (
     <main className="page">
       <section className="panel">
@@ -86,9 +111,19 @@ function App() {
         {loading ? (
           <p className="loading">加载中...</p>
         ) : (
-          <TaskList tasks={tasks} onToggle={handleToggle} />
+          <TaskList tasks={tasks} onToggle={handleToggle} onEdit={handleEdit} />
         )}
       </section>
+
+      {/* 编辑弹窗 */}
+      {editingTask && (
+        <TaskEditor
+          task={editingTask}
+          onSave={handleSaveEdit}
+          onClose={handleCloseEditor}
+          saving={saving}
+        />
+      )}
     </main>
   );
 }

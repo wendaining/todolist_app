@@ -4,9 +4,10 @@ import { TaskItem } from './TaskItem';
 interface TaskListProps {
   tasks: Task[];
   onToggle: (id: string, done: boolean) => void;
+  onEdit: (task: Task) => void;
 }
 
-export function TaskList({ tasks, onToggle }: TaskListProps) {
+export function TaskList({ tasks, onToggle, onEdit }: TaskListProps) {
   const todoTasks = tasks.filter((t) => t.status === 'todo');
   const doneTasks = tasks.filter((t) => t.status === 'done');
 
@@ -19,7 +20,7 @@ export function TaskList({ tasks, onToggle }: TaskListProps) {
         ) : (
           <ul className="tasks">
             {todoTasks.map((task) => (
-              <TaskItem key={task.id} task={task} onToggle={onToggle} />
+              <TaskItem key={task.id} task={task} onToggle={onToggle} onEdit={onEdit} />
             ))}
           </ul>
         )}
@@ -32,7 +33,7 @@ export function TaskList({ tasks, onToggle }: TaskListProps) {
         ) : (
           <ul className="tasks">
             {doneTasks.map((task) => (
-              <TaskItem key={task.id} task={task} onToggle={onToggle} />
+              <TaskItem key={task.id} task={task} onToggle={onToggle} onEdit={onEdit} />
             ))}
           </ul>
         )}

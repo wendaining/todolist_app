@@ -3,6 +3,7 @@ import { Task } from '../api/client';
 interface TaskItemProps {
   task: Task;
   onToggle: (id: string, done: boolean) => void;
+  onEdit: (task: Task) => void;
 }
 
 const priorityLabels = {
@@ -11,7 +12,7 @@ const priorityLabels = {
   low: '低',
 };
 
-export function TaskItem({ task, onToggle }: TaskItemProps) {
+export function TaskItem({ task, onToggle, onEdit }: TaskItemProps) {
   const isDone = task.status === 'done';
 
   const formatDate = (dateStr: string | null) => {
@@ -25,8 +26,15 @@ export function TaskItem({ task, onToggle }: TaskItemProps) {
     });
   };
 
+  const handleClick = () => {
+    onEdit(task);
+  };
+
   return (
-    <li className={`task-item ${isDone ? 'done' : ''} priority-${task.priority}`}>
+    <li
+      className={`task-item ${isDone ? 'done' : ''} priority-${task.priority}`}
+      onClick={handleClick}
+    >
       <label className="task-checkbox" onClick={(e) => e.stopPropagation()}>
         <input
           type="checkbox"

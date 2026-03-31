@@ -30,6 +30,8 @@
 19. 2026-03-31：新增后端边界条件测试用例（32 新测试）：TaskControllerEdgeCaseTest（dueAt、title 更新、done→todo、限流 429、无效枚举等）、SyncServiceEdgeCaseTest（LWW 拒绝旧数据、批量 push、completedAt/dueAt 保留、空列表不删除等）、TaskEdgeCaseTest（setter 自动更新 updatedAt、null 校验、trim 行为等），全部测试 62/62 通过。
 20. 2026-03-31：完成前端 MVP 基础结构：API 调用层（client.ts）、任务列表组件（TaskList + TaskItem）、新建任务表单（AddTask）、完整样式；支持新建任务、勾选完成/取消、待办/已完成分区展示；前端测试 1/1 通过，构建成功。
 21. 2026-03-31：完成前端样式升级（极简文艺风）：引入 Playfair Display + Source Sans 3 字体；CSS Variables 色彩系统支持浅色/深色主题切换；任务卡片优先级侧边条；交错渐入动画；主题切换按钮（localStorage 持久化 + 系统偏好检测）。
+22. 2026-03-31：新增 CORS 配置（CorsConfig.java），允许前端 5173 端口跨域访问后端 8080。
+23. 2026-03-31：完成 TaskEditor 弹窗组件：点击任务可编辑优先级和截止日期（DDL），调用 PATCH /tasks/{id} 保存；M1.2 编辑功能完成。
 
 ## 0. 启动前检查
 
@@ -63,7 +65,7 @@
 - [x] 新建任务输入框
 - [x] 任务列表展示（todo 和 done 分区）
 - [x] 勾选完成与取消完成
-- [ ] 编辑优先级与 DDL
+- [x] 编辑优先级与 DDL
 
 ### 1.3 本地提醒
 

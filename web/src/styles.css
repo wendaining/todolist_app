@@ -641,3 +641,34 @@ p {
     flex: 1;
   }
 }
+
+/* 任务标题展示（弹窗内） */
+.task-title-display {
+  padding: 12px 14px;
+  font-size: 15px;
+  color: var(--text-primary);
+  background: var(--input-bg);
+  border: 1px solid var(--input-border);
+  border-radius: 10px;
+  line-height: 1.5;
+}
+
+/* 清除日期按钮 */
+.clear-date-btn {
+  margin-top: 8px;
+  padding: 6px 12px;
+  font-family: var(--font-body);
+  font-size: 13px;
+  color: var(--text-secondary);
+  background: transparent;
+  border: 1px solid var(--input-border);
+  border-radius: 6px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.clear-date-btn:hover {
+  color: var(--priority-high);
+  border-color: var(--priority-high);
+  background: var(--priority-high-bg);
+}
