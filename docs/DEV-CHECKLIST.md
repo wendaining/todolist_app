@@ -29,6 +29,7 @@
 18. 2026-03-31：已完成 Task 数据 SQLite 持久化：新增 JdbcTaskRepository 替换内存实现，扩展 schema.sql 增加 tasks 表，任务数据服务重启后不再丢失；新增 TaskPersistenceIntegrationTest（3 用例），全部测试 30/30 通过。
 19. 2026-03-31：新增后端边界条件测试用例（32 新测试）：TaskControllerEdgeCaseTest（dueAt、title 更新、done→todo、限流 429、无效枚举等）、SyncServiceEdgeCaseTest（LWW 拒绝旧数据、批量 push、completedAt/dueAt 保留、空列表不删除等）、TaskEdgeCaseTest（setter 自动更新 updatedAt、null 校验、trim 行为等），全部测试 62/62 通过。
 20. 2026-03-31：完成前端 MVP 基础结构：API 调用层（client.ts）、任务列表组件（TaskList + TaskItem）、新建任务表单（AddTask）、完整样式；支持新建任务、勾选完成/取消、待办/已完成分区展示；前端测试 1/1 通过，构建成功。
+21. 2026-03-31：完成前端样式升级（极简文艺风）：引入 Playfair Display + Source Sans 3 字体；CSS Variables 色彩系统支持浅色/深色主题切换；任务卡片优先级侧边条；交错渐入动画；主题切换按钮（localStorage 持久化 + 系统偏好检测）。
 
 ## 0. 启动前检查
 

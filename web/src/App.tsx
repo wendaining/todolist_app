@@ -3,11 +3,28 @@ import { api, Task, TaskPriority } from './api/client';
 import { AddTask } from './components/AddTask';
 import { TaskList } from './components/TaskList';
 
+type Theme = 'light' | 'dark';
+
 function App() {
   const [tasks, setTasks] = useState<Task[]>([]);
   const [loading, setLoading] = useState(true);
   const [adding, setAdding] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [theme, setTheme] = useState<Theme>(() => {
+    const saved = localStorage.getItem('theme') as Theme | null;
+    if (saved) return saved;
+    return window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
+  });
+
+  // 主题切换
+  useEffect(() => {
+    document.documentElement.setAttribute('data-theme', theme);
+    localStorage.setItem('theme', theme);
+  }, [theme]);
+
+  const toggleTheme = () => {
+    setTheme((prev) => (prev === 'light' ? 'dark' : 'light'));
+  };
 
   const loadTasks = async () => {
     try {
@@ -54,7 +71,16 @@ function App() {
   return (
     <main className="page">
       <section className="panel">
-        <h1>TodoList</h1>
+        <header className="header">
+          <h1>TodoList</h1>
+          <button
+            className="theme-toggle"
+            onClick={toggleTheme}
+            aria-label={theme === 'light' ? '切换到深色模式' : '切换到浅色模式'}
+          >
+            {theme === 'light' ? '🌙' : '☀️'}
+          </button>
+        </header>
         <AddTask onAdd={handleAdd} loading={adding} />
         {error && <p className="error">{error}</p>}
         {loading ? (

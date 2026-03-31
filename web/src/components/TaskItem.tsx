@@ -26,8 +26,8 @@ export function TaskItem({ task, onToggle }: TaskItemProps) {
   };
 
   return (
-    <li className={`task-item ${isDone ? 'done' : ''}`}>
-      <label className="task-checkbox">
+    <li className={`task-item ${isDone ? 'done' : ''} priority-${task.priority}`}>
+      <label className="task-checkbox" onClick={(e) => e.stopPropagation()}>
         <input
           type="checkbox"
           checked={isDone}
@@ -42,7 +42,7 @@ export function TaskItem({ task, onToggle }: TaskItemProps) {
             {priorityLabels[task.priority]}
           </span>
           {task.dueAt && (
-            <span className="due-date">截止: {formatDate(task.dueAt)}</span>
+            <span className="due-date">{formatDate(task.dueAt)}</span>
           )}
         </div>
       </div>
